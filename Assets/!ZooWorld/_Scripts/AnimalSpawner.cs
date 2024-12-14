@@ -72,20 +72,21 @@ public class AnimalSpawner : MonoBehaviour
     {
         Vector3 viewportPoint = Vector3.zero;
         int border = Random.Range(0, 4); // 0: Top, 1: Bottom, 2: Left, 3: Right
+        float offset = 0.05f; // Slight offset to ensure it's just off-screen
 
         switch (border)
         {
             case 0: // Top
-                viewportPoint = new Vector3(Random.Range(0f, 1f), 1f, spawnDistance);
+                viewportPoint = new Vector3(Random.Range(0f, 1f), 1f + offset, mainCamera.nearClipPlane + 10f);
                 break;
             case 1: // Bottom
-                viewportPoint = new Vector3(Random.Range(0f, 1f), 0f, spawnDistance);
+                viewportPoint = new Vector3(Random.Range(0f, 1f), 0f - offset, mainCamera.nearClipPlane + 10f);
                 break;
             case 2: // Left
-                viewportPoint = new Vector3(0f, Random.Range(0f, 1f), spawnDistance);
+                viewportPoint = new Vector3(0f - offset, Random.Range(0f, 1f), mainCamera.nearClipPlane + 10f);
                 break;
             case 3: // Right
-                viewportPoint = new Vector3(1f, Random.Range(0f, 1f), spawnDistance);
+                viewportPoint = new Vector3(1f + offset, Random.Range(0f, 1f), mainCamera.nearClipPlane + 10f);
                 break;
         }
 
@@ -93,4 +94,5 @@ public class AnimalSpawner : MonoBehaviour
         worldPosition.y = 0; // Ensure Y is 0 for spawning on the X-Z plane
         return worldPosition;
     }
+
 }

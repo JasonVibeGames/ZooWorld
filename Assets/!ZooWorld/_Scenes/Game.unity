@@ -316,12 +316,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 373000f5da4824867b62a1d8e6075c6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxAnimals: 10
+  _maxAnimals: 20
   animalPrefabs:
+  - {fileID: 7323421367279298425, guid: 5f481a0db7d23401c8fa6eb2aaccc7dd, type: 3}
   - {fileID: 3954387011160533347, guid: c9f38257c20a2459b9bf190e895db7d5, type: 3}
   - {fileID: 4508600596227678689, guid: 24872444bf7484fa78fc8049f1f595b2, type: 3}
   _spawnIntervalRange: {x: 1, y: 2}
-  spawnDistance: 10
+  spawnDistance: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,7 +503,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 12.34, z: 0}
+  m_LocalPosition: {x: 0, y: 17.51, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
