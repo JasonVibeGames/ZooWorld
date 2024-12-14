@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Lean.Pool;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,22 +11,19 @@ public class AnimalController : MonoBehaviour
     [SerializeField] private AnimalData _animalData;
     [SerializeField] private LayerMask _animalLayer;
 
-    [Header("VFX")] 
+    [Header("VFX")]
     [SerializeField] private GameObject _eatVFX;
     [SerializeField] private GameObject _bloodVFX;
-    Vector3 _eatVFXOffset = new Vector3(0,.5f,0);
+    private Vector3 _eatVFXOffset = new Vector3(0, .5f, 0);
 
     private UnityAction<AnimalController> _onDespawn;
     [SerializeField] private BoxDetector _boxDetector;
+
     public int priorityID;
 
     public int PriorityID => priorityID;
 
-    void GenerateNewPriorityId()
-    {
-        // Generate a new unique priority ID (use a random or timestamp-based approach)
-        priorityID = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-    }
+    private bool _eatHandled;
 
     private void Awake()
     {
@@ -37,6 +33,7 @@ public class AnimalController : MonoBehaviour
 
     private void OnEnable()
     {
+        _eatHandled = false;
         GenerateNewPriorityId();
     }
 
@@ -51,9 +48,15 @@ public class AnimalController : MonoBehaviour
         _animalMovementBehaviour.CanMove = true;
         _onDespawn = onDespawn;
     }
-    
+
+    private void GenerateNewPriorityId()
+    {
+        priorityID = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+    }
+
     private void OnDetectTrigger(Collider other)
     {
+
         if ((_animalLayer.value & (1 << other.gameObject.layer)) != 0)
         {
             AnimalController otherAnimal = other.attachedRigidbody.GetComponent<AnimalController>();
@@ -62,25 +65,23 @@ public class AnimalController : MonoBehaviour
             {
                 return;
             }
-            
+
+            // Collision handling logic
             if (_animalData.Role == AnimalData.AnimalRole.Prey && otherAnimal._animalData.Role == AnimalData.AnimalRole.Prey)
             {
                 _animalMovementBehaviour.BounceAway();
                 otherAnimal._animalMovementBehaviour.BounceAway();
             }
-            
-            if (_animalData.Role == AnimalData.AnimalRole.Predator && otherAnimal._animalData.Role == AnimalData.AnimalRole.Prey)
-            { 
-                Eat(otherAnimal);
+            else if (_animalData.Role == AnimalData.AnimalRole.Predator && otherAnimal._animalData.Role == AnimalData.AnimalRole.Prey)
+            {
+                otherAnimal.GetEaten();
             }
-            
-            if (_animalData.Role == AnimalData.AnimalRole.Prey && otherAnimal._animalData.Role == AnimalData.AnimalRole.Predator)
-            { 
+            else if (_animalData.Role == AnimalData.AnimalRole.Prey && otherAnimal._animalData.Role == AnimalData.AnimalRole.Predator)
+            {
                 GetEaten();
             }
-            
-            if (_animalData.Role == AnimalData.AnimalRole.Predator && otherAnimal._animalData.Role == AnimalData.AnimalRole.Predator)
-            { 
+            else if (_animalData.Role == AnimalData.AnimalRole.Predator && otherAnimal._animalData.Role == AnimalData.AnimalRole.Predator)
+            {
                 // Compare instance IDs to determine which one survives
                 if (this.PriorityID < otherAnimal.PriorityID)
                 {
@@ -88,29 +89,22 @@ public class AnimalController : MonoBehaviour
                 }
                 else
                 {
-                    Eat(otherAnimal);
+                    otherAnimal.GetEaten();
                 }
             }
-        }    
-    }
-    
-
-    private void Eat(AnimalController animalToEat)
-    {
-        LeanPool.Spawn(_bloodVFX, animalToEat.transform.position, _bloodVFX.transform.rotation);
-        LeanPool.Spawn(_eatVFX, animalToEat.transform.position + _eatVFXOffset, _eatVFX.transform.rotation);
-        LeanPool.Despawn(animalToEat.gameObject);
-        
-        GenerateNewPriorityId();
+        }
     }
 
     private void GetEaten()
     {
+        if (_eatHandled)
+        {
+            return;
+        }
+        
+        _eatHandled = true;
         LeanPool.Spawn(_bloodVFX, transform.position, _bloodVFX.transform.rotation);
         LeanPool.Spawn(_eatVFX, transform.position + _eatVFXOffset, _eatVFX.transform.rotation);
         LeanPool.Despawn(gameObject);
-        
-        GenerateNewPriorityId();
     }
-    
 }

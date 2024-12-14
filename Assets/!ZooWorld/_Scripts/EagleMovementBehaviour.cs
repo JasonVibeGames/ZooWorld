@@ -12,6 +12,8 @@ public class EagleMovement : AnimalMovementBehaviour
     [SerializeField] private float swoopDuration;
     [SerializeField] private float _swoopSpeed;
     [SerializeField] private BoxDetector _swoopDetector;
+    [SerializeField] private Transform art; // Reference to the child transform
+    [SerializeField] private float _swoopRotationSpeed;
     private Coroutine swoopingCR;
     private float swoopHeight = 0;
     private Camera mainCamera;
@@ -29,8 +31,13 @@ public class EagleMovement : AnimalMovementBehaviour
         {
             EnsureInitialDirectionInward();
         }
-        
+
         _swoopDetector.Initialize(OnDetectPrey);
+
+        if (art == null)
+        {
+            Debug.LogError("Art transform is not assigned!");
+        }
     }
 
     private void OnDetectPrey(Collider other)
@@ -51,29 +58,32 @@ public class EagleMovement : AnimalMovementBehaviour
         // Move forward in the current direction
         Vector3 targetPos = transform.position + transform.forward * speed * Time.deltaTime;
         float targetHeight = flyHeight;
-    
+
         if (_isSwooping)
         {
-            targetHeight = 0;
+            targetHeight = 0; // Swoop down to ground level
         }
 
-        targetPos.y = Mathf.Lerp(transform.position.y, targetHeight, Time.deltaTime * _swoopSpeed);
+        // Adjust height towards the target
+        targetPos.y = Mathf.MoveTowards(transform.position.y, targetHeight, _swoopSpeed * Time.deltaTime);
+
+        // Calculate the movement vector
+        Vector3 movementVector = targetPos - transform.position;
+
+        if (art != null && movementVector != Vector3.zero) 
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(movementVector);
+            art.rotation = Quaternion.RotateTowards(art.rotation, targetRotation, _swoopRotationSpeed * Time.deltaTime);
+        }
+
+        // Update the position of the root GameObject
         transform.position = targetPos;
 
-        // Check if the eagle is off-screen
-        if (IsOffScreen() && !_isRotating && !_justRotated)
+        // Check if near the edge of the screen
+        if (IsNearScreenEdge() && !_isRotating && !_justRotated)
         {
             StartCoroutine(PauseAndRotate());
         }
-    }
-
-    private bool IsOffScreen()
-    {
-        Vector3 viewportPosition = mainCamera.WorldToViewportPoint(transform.position);
-
-        // Check if outside the screen bounds
-        return viewportPosition.x < 0 || viewportPosition.x > 1 ||
-               viewportPosition.y < 0 || viewportPosition.y > 1;
     }
 
     private void EnsureInitialDirectionInward()
@@ -82,9 +92,17 @@ public class EagleMovement : AnimalMovementBehaviour
         screenCenter.y = transform.position.y; // Keep horizontal movement
         Vector3 initialDirection = (screenCenter - transform.position).normalized;
 
-        transform.rotation = Quaternion.LookRotation(initialDirection);
+        transform.rotation = Quaternion.LookRotation(initialDirection); // Root rotation
     }
-    
+
+    private bool IsNearScreenEdge()
+    {
+        Vector3 viewportPosition = mainCamera.WorldToViewportPoint(transform.position);
+
+        return viewportPosition.x < 0 + screenMargin || viewportPosition.x > 1 - screenMargin ||
+               viewportPosition.y < 0 + screenMargin || viewportPosition.y > 1 - screenMargin;
+    }
+
     private IEnumerator PauseAndRotate()
     {
         if (swoopingCR != null)
@@ -99,7 +117,7 @@ public class EagleMovement : AnimalMovementBehaviour
         Vector3 randomDirection = GetRandomDirectionTowardsCenter();
         Quaternion targetRotation = Quaternion.LookRotation(randomDirection);
 
-        // Smoothly rotate towards the new direction
+        // Smoothly rotate the root GameObject
         while (Quaternion.Angle(transform.rotation, targetRotation) > 0.1f)
         {
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
@@ -135,7 +153,7 @@ public class EagleMovement : AnimalMovementBehaviour
         {
             return;
         }
-        
+
         swoopingCR = StartCoroutine(PerformSwoop());
     }
 

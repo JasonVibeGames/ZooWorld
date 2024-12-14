@@ -623,8 +623,9 @@ MonoBehaviour:
   adjustOnSpawn: 1
   flyHeight: 3
   swoopDuration: 1
-  _swoopSpeed: 0
+  _swoopSpeed: 10
   _swoopDetector: {fileID: 1929504811115499864}
+  art: {fileID: 77813940180241165}
 --- !u!4 &4475061528281006718 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5050413090243701941, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
