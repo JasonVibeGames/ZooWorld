@@ -11,7 +11,9 @@ public class FrogMovement : AnimalMovementBehaviour
     [SerializeField] private float _jumpDuration;
     [SerializeField] private float _randomDirectionChangeAngle = 90f;
     [SerializeField] private float screenMargin = 0.1f; // Margin percentage (e.g., 0.1 = 10% of the screen)
-
+    private bool _jumping;
+    private bool _bouncing;
+    
     private float _timer;
     private Camera _mainCamera;
 
@@ -27,25 +29,42 @@ public class FrogMovement : AnimalMovementBehaviour
         if (_timer >= _jumpIntervalTime)
         {
             ChangeDirectionIfNeeded();
-            Jump(_jumpHeight);
+            Jump();
             _timer = 0;
         }
     }
 
     public override void BounceAway()
     {
-        Debug.Log("Bounce");
-        transform.DOKill();
-        TurnAround();
-        Jump(0);
-    }
+        if (_bouncing)
+        {
+            return;
+        }
 
-    void Jump(float jumpHeight)
-    {
+        if (_jumping == false)
+        {
+            return;
+        }
+
+        _jumping = false;
+        _bouncing = true;
+        transform.DOKill();
+        
+        TurnAround();
+        
         Vector3 jumpPos = transform.position + transform.forward * _jumpDistance;
         jumpPos.y = 0;
-        transform.DOJump(jumpPos, jumpHeight, 1, _jumpDuration);
+        transform.DOJump(jumpPos, _jumpHeight, 1, _jumpDuration).OnComplete(() => _bouncing = false);
     }
+
+    void Jump()
+    {
+        _jumping = true;
+        Vector3 jumpPos = transform.position + transform.forward * _jumpDistance;
+        jumpPos.y = 0;
+        transform.DOJump(jumpPos, _jumpHeight, 1, _jumpDuration).OnComplete(() => _jumping = false);
+    }
+    
 
     void TurnAround()
     {

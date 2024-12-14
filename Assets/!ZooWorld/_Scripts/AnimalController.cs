@@ -21,10 +21,23 @@ public class AnimalController : MonoBehaviour
     [SerializeField] private BoxDetector _boxDetector;
     public int priorityID;
 
+    public int PriorityID => priorityID;
+
+    void GenerateNewPriorityId()
+    {
+        // Generate a new unique priority ID (use a random or timestamp-based approach)
+        priorityID = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+    }
+
     private void Awake()
     {
         _animalMovementBehaviour = GetComponent<AnimalMovementBehaviour>();
         _boxDetector.Initialize(OnDetectTrigger);
+    }
+
+    private void OnEnable()
+    {
+        GenerateNewPriorityId();
     }
 
     private void OnDisable()
@@ -55,6 +68,7 @@ public class AnimalController : MonoBehaviour
             if (_animalData.Role == AnimalData.AnimalRole.Prey && otherAnimal._animalData.Role == AnimalData.AnimalRole.Prey)
             {
                 _animalMovementBehaviour.BounceAway();
+                otherAnimal._animalMovementBehaviour.BounceAway();
             }
             
             if (_animalData.Role == AnimalData.AnimalRole.Predator && otherAnimal._animalData.Role == AnimalData.AnimalRole.Prey)
@@ -70,7 +84,7 @@ public class AnimalController : MonoBehaviour
             if (_animalData.Role == AnimalData.AnimalRole.Predator && otherAnimal._animalData.Role == AnimalData.AnimalRole.Predator)
             { 
                 // Compare instance IDs to determine which one survives
-                if (this.GetInstanceID() < otherAnimal.GetInstanceID())
+                if (this.PriorityID < otherAnimal.PriorityID)
                 {
                     GetEaten();
                 }
@@ -85,22 +99,21 @@ public class AnimalController : MonoBehaviour
         }    
     }
     
-    private int GenerateNewPriorityId()
-    {
-        // Generate a new unique priority ID (use a random or timestamp-based approach)
-        return UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-    }
 
     private void Eat(AnimalController animalToEat)
     {
         LeanPool.Spawn(_eatVFX, animalToEat.transform.position + _eatVFXOffset, _eatVFX.transform.rotation);
         LeanPool.Despawn(animalToEat.gameObject);
+        
+        GenerateNewPriorityId();
     }
 
     private void GetEaten()
     {
         LeanPool.Spawn(_eatVFX, transform.position + _eatVFXOffset, _eatVFX.transform.rotation);
         LeanPool.Despawn(gameObject);
+        
+        GenerateNewPriorityId();
     }
     
 }

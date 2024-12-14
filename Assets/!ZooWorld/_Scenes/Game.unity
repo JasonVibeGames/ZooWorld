@@ -318,9 +318,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxAnimals: 20
   animalPrefabs:
-  - {fileID: 7323421367279298425, guid: 5f481a0db7d23401c8fa6eb2aaccc7dd, type: 3}
   - {fileID: 3954387011160533347, guid: c9f38257c20a2459b9bf190e895db7d5, type: 3}
-  - {fileID: 4508600596227678689, guid: 24872444bf7484fa78fc8049f1f595b2, type: 3}
   _spawnIntervalRange: {x: 1, y: 2}
   spawnDistance: 0
 --- !u!1 &705507993
