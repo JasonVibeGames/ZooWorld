@@ -11,20 +11,20 @@ public class SnakeMovement : AnimalMovementBehaviour
     [SerializeField] private float rotationLerpSpeed = 10f;
     [SerializeField] private float wanderStrength = 0.5f;
     [SerializeField] private float wanderInterval = 2f;
+    [SerializeField] private float screenMargin = 0.1f;
+    [SerializeField] private float steerSpeed = 5f; // Speed of steering
 
     private float time;
-    private Vector3 startPosition;
     private Vector3 movementDirection;
     private Vector3 perpendicularDirection;
     private Camera mainCamera;
     private float wanderTimer;
+    private bool isSteering;
 
     void OnEnable()
     {
-        startPosition = transform.position;
         movementDirection = transform.forward.normalized;
         perpendicularDirection = new Vector3(-movementDirection.z, 0, movementDirection.x).normalized;
-
         mainCamera = Camera.main;
     }
 
@@ -32,55 +32,69 @@ public class SnakeMovement : AnimalMovementBehaviour
     {
         wanderTimer += Time.deltaTime;
 
-        if (wanderTimer >= wanderInterval)
+        if (!isSteering && wanderTimer >= wanderInterval)
         {
             RandomizeDirection();
             wanderTimer = 0f;
         }
 
-        if (IsOutOfCameraBounds())
+        if (IsNearScreenEdge(out Vector3 directionToCenter))
         {
-            RotateTowardsScreenCenter();
+            SteerTowardsCenter(directionToCenter);
+        }
+        else
+        {
+            isSteering = false;
         }
 
-        time += Time.deltaTime * speed;
+        time += Time.deltaTime;
+
         float waveOffset = Mathf.Sin(time * frequency) * amplitude;
-        Vector3 targetPosition = startPosition + movementDirection * time + perpendicularDirection * waveOffset;
+        Vector3 forwardMovement = movementDirection * speed * Time.deltaTime;
+        Vector3 oscillation = perpendicularDirection * waveOffset;
 
-        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * positionLerpSpeed);
+        transform.position += forwardMovement;
 
-        Vector3 direction = (targetPosition - transform.position).normalized;
-        if (direction.magnitude > 0.01f)
+        if (!isSteering)
         {
+            transform.position += oscillation * Time.deltaTime * positionLerpSpeed;
+
+            Vector3 oscillatingDirection = movementDirection + oscillation.normalized * 0.1f;
+            Quaternion targetRotation = Quaternion.LookRotation(oscillatingDirection.normalized);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationLerpSpeed);
+        }
+        else
+        {
+            Vector3 direction = movementDirection.normalized;
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationLerpSpeed);
         }
     }
 
-    private bool IsOutOfCameraBounds()
+    private bool IsNearScreenEdge(out Vector3 directionToCenter)
     {
         Vector3 viewportPosition = mainCamera.WorldToViewportPoint(transform.position);
-        return viewportPosition.x < 0 || viewportPosition.x > 1 || viewportPosition.y < 0 || viewportPosition.y > 1;
+        directionToCenter = Vector3.zero;
+
+        if (viewportPosition.x < 0 + screenMargin || viewportPosition.x > 1 - screenMargin ||
+            viewportPosition.y < 0 + screenMargin || viewportPosition.y > 1 - screenMargin)
+        {
+            Vector3 screenCenter = mainCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, mainCamera.nearClipPlane + 10f));
+            directionToCenter = (screenCenter - transform.position).normalized;
+            directionToCenter.y = 0;
+            return true;
+        }
+        return false;
     }
 
-    private void RotateTowardsScreenCenter()
+    private void SteerTowardsCenter(Vector3 directionToCenter)
     {
-        Vector3 screenCenter = mainCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, mainCamera.nearClipPlane + 10f));
-        screenCenter.y = 0;
+        isSteering = true;
 
-        Vector3 directionToCenter = (screenCenter - transform.position).normalized;
+        // Use a higher steerSpeed multiplier to make steering faster
+        movementDirection = Vector3.Lerp(movementDirection, directionToCenter, Time.deltaTime * steerSpeed).normalized;
 
-        if (directionToCenter.magnitude > 0.01f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(directionToCenter);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationLerpSpeed);
-        }
-
-        movementDirection = directionToCenter;
         perpendicularDirection = new Vector3(-movementDirection.z, 0, movementDirection.x).normalized;
-
-        startPosition = transform.position;
-        time = 0;
     }
 
     private void RandomizeDirection()
@@ -92,8 +106,5 @@ public class SnakeMovement : AnimalMovementBehaviour
         movementDirection.Normalize();
 
         perpendicularDirection = new Vector3(-movementDirection.z, 0, movementDirection.x).normalized;
-
-        startPosition = transform.position;
-        time = 0;
     }
 }

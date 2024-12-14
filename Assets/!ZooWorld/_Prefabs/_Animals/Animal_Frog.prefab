@@ -624,8 +624,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e0be2aabb08d4cea91cfe26e0c198c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _jumpIntervalTime: 1
+  _jumpIntervalTime: 2
   _jumpDistance: 2
   _jumpHeight: 1
   _jumpDuration: 1
   _randomDirectionChangeAngle: 90
+  screenMargin: 0.05

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Lean.Pool;
 using UnityEngine;
 
 public class AnimalSpawner : MonoBehaviour
@@ -55,7 +56,7 @@ public class AnimalSpawner : MonoBehaviour
         spawnPosition.y = 0;
 
         GameObject randomAnimal = animalPrefabs[Random.Range(0, animalPrefabs.Length)].gameObject;
-        GameObject spawnedGameObject = Instantiate(randomAnimal, spawnPosition, Quaternion.identity);
+        GameObject spawnedGameObject = LeanPool.Spawn(randomAnimal, spawnPosition, Quaternion.identity);
         AnimalController spawnedAnimal = spawnedGameObject.GetComponent<AnimalController>();
         _animals.Add(spawnedAnimal);
         
