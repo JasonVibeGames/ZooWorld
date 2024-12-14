@@ -296,7 +296,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _eatVFX: {fileID: 178060823970372277, guid: 7b6484eaf33c3484eb1e488ba7d5b9ed, type: 3}
+  _bloodVFX: {fileID: 135106, guid: 635c110889e5440e786ec6cdb86eaaf7, type: 3}
   _boxDetector: {fileID: 7436960368825481559}
+  priorityID: 0
 --- !u!54 &5886458951323801588
 Rigidbody:
   m_ObjectHideFlags: 0

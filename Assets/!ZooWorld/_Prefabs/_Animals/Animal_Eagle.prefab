@@ -619,11 +619,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   screenMargin: 0
-  rotationSpeed: 100
+  rotationSpeed: 300
   adjustOnSpawn: 1
   flyHeight: 3
   swoopDuration: 1
-  _swoopSpeed: 5
+  _swoopSpeed: 0
   _swoopDetector: {fileID: 1929504811115499864}
 --- !u!4 &4475061528281006718 stripped
 Transform:

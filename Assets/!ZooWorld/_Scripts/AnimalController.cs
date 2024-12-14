@@ -14,9 +14,9 @@ public class AnimalController : MonoBehaviour
 
     [Header("VFX")] 
     [SerializeField] private GameObject _eatVFX;
+    [SerializeField] private GameObject _bloodVFX;
     Vector3 _eatVFXOffset = new Vector3(0,.5f,0);
 
-    private bool hasHandledCollision = false;
     private UnityAction<AnimalController> _onDespawn;
     [SerializeField] private BoxDetector _boxDetector;
     public int priorityID;
@@ -42,20 +42,18 @@ public class AnimalController : MonoBehaviour
 
     private void OnDisable()
     {
+        GameManager.instance.OnKill(_animalData.Role);
         _onDespawn?.Invoke(this);
     }
 
     public void Initialize(UnityAction<AnimalController> onDespawn)
     {
-        hasHandledCollision = false;
         _animalMovementBehaviour.CanMove = true;
         _onDespawn = onDespawn;
     }
     
     private void OnDetectTrigger(Collider other)
     {
-        if (hasHandledCollision) return;
-
         if ((_animalLayer.value & (1 << other.gameObject.layer)) != 0)
         {
             AnimalController otherAnimal = other.attachedRigidbody.GetComponent<AnimalController>();
@@ -92,9 +90,6 @@ public class AnimalController : MonoBehaviour
                 {
                     Eat(otherAnimal);
                 }
-
-                this.hasHandledCollision = true;
-                otherAnimal.hasHandledCollision = true;
             }
         }    
     }
@@ -102,6 +97,7 @@ public class AnimalController : MonoBehaviour
 
     private void Eat(AnimalController animalToEat)
     {
+        LeanPool.Spawn(_bloodVFX, animalToEat.transform.position, _bloodVFX.transform.rotation);
         LeanPool.Spawn(_eatVFX, animalToEat.transform.position + _eatVFXOffset, _eatVFX.transform.rotation);
         LeanPool.Despawn(animalToEat.gameObject);
         
@@ -110,6 +106,7 @@ public class AnimalController : MonoBehaviour
 
     private void GetEaten()
     {
+        LeanPool.Spawn(_bloodVFX, transform.position, _bloodVFX.transform.rotation);
         LeanPool.Spawn(_eatVFX, transform.position + _eatVFXOffset, _eatVFX.transform.rotation);
         LeanPool.Despawn(gameObject);
         

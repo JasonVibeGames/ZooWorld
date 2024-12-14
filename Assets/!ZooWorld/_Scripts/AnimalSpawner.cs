@@ -9,7 +9,6 @@ public class AnimalSpawner : MonoBehaviour
     [SerializeField] private int _maxAnimals;
     [SerializeField] private AnimalController[] animalPrefabs;
     [SerializeField] private Vector2 _spawnIntervalRange = new Vector2(1,2);
-    [SerializeField] private float spawnDistance = 10f;
     private float _spawnInterval;
 
     private float timer;
@@ -98,7 +97,7 @@ public class AnimalSpawner : MonoBehaviour
         }
 
         Vector3 worldPosition = mainCamera.ViewportToWorldPoint(viewportPoint);
-        worldPosition.y = 0; // Ensure Y is 0 for spawning on the X-Z plane
+        worldPosition.y = 0;
         return worldPosition;
     }
 

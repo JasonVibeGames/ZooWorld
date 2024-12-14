@@ -51,21 +51,29 @@ public class EagleMovement : AnimalMovementBehaviour
         // Move forward in the current direction
         Vector3 targetPos = transform.position + transform.forward * speed * Time.deltaTime;
         float targetHeight = flyHeight;
-        
+    
         if (_isSwooping)
         {
             targetHeight = 0;
         }
 
         targetPos.y = Mathf.Lerp(transform.position.y, targetHeight, Time.deltaTime * _swoopSpeed);
-     
         transform.position = targetPos;
 
-        // Check if near the edge of the screen
-        if (IsNearScreenEdge() && !_isRotating && !_justRotated)
+        // Check if the eagle is off-screen
+        if (IsOffScreen() && !_isRotating && !_justRotated)
         {
             StartCoroutine(PauseAndRotate());
         }
+    }
+
+    private bool IsOffScreen()
+    {
+        Vector3 viewportPosition = mainCamera.WorldToViewportPoint(transform.position);
+
+        // Check if outside the screen bounds
+        return viewportPosition.x < 0 || viewportPosition.x > 1 ||
+               viewportPosition.y < 0 || viewportPosition.y > 1;
     }
 
     private void EnsureInitialDirectionInward()
@@ -76,15 +84,7 @@ public class EagleMovement : AnimalMovementBehaviour
 
         transform.rotation = Quaternion.LookRotation(initialDirection);
     }
-
-    private bool IsNearScreenEdge()
-    {
-        Vector3 viewportPosition = mainCamera.WorldToViewportPoint(transform.position);
-
-        return viewportPosition.x < 0 + screenMargin || viewportPosition.x > 1 - screenMargin ||
-               viewportPosition.y < 0 + screenMargin || viewportPosition.y > 1 - screenMargin;
-    }
-
+    
     private IEnumerator PauseAndRotate()
     {
         if (swoopingCR != null)
