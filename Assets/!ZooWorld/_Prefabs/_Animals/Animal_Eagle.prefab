@@ -319,6 +319,58 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &3005343800961679051
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5597173902961172856}
+  - component: {fileID: 1929504811115499864}
+  m_Layer: 3
+  m_Name: Swoop Detector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5597173902961172856
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3005343800961679051}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4475061528281006718}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1929504811115499864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3005343800961679051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1349ad1e1bb14014ae9aae7c1e1fbed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boxSize: {x: 2.59, y: 22.15, z: 6.2}
+  boxOffset: {x: 0, y: 0, z: 2.84}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  showInEditor: 1
+  ignoreColliders:
+  - {fileID: 4898869853230434589}
 --- !u!1 &5745214445145713536
 GameObject:
   m_ObjectHideFlags: 0
@@ -470,8 +522,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2138703893854521778, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
+      propertyPath: _animalData
+      value: 
+      objectReference: {fileID: 11400000, guid: f4a1abe0cfc904c0686408c33d0c3960, type: 2}
+    - target: {fileID: 2138703893854521778, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
       propertyPath: _animalMovementBehaviour
       value: 
+      objectReference: {fileID: 7179892966009818449}
+    - target: {fileID: 3016804827604103166, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2.1577
       objectReference: {fileID: 0}
     - target: {fileID: 5050413090243701941, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
       propertyPath: m_LocalPosition.x
@@ -524,6 +584,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 5050413090243701941, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5597173902961172856}
     - targetCorrespondingSourceObject: {fileID: 8725799522749769158, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7511231715855631300}
@@ -556,6 +619,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   screenMargin: 0
-  rotationSpeed: 300
+  rotationSpeed: 100
   adjustOnSpawn: 1
   flyHeight: 3
+  swoopDuration: 1
+  _swoopSpeed: 5
+  _swoopDetector: {fileID: 1929504811115499864}
+--- !u!4 &4475061528281006718 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5050413090243701941, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
+  m_PrefabInstance: {fileID: 8650349674336726731}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &4898869853230434589 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 4319091816376444886, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
+  m_PrefabInstance: {fileID: 8650349674336726731}
+  m_PrefabAsset: {fileID: 0}

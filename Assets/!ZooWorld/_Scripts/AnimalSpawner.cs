@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Lean.Pool;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class AnimalSpawner : MonoBehaviour
 {
@@ -59,6 +60,7 @@ public class AnimalSpawner : MonoBehaviour
         GameObject spawnedGameObject = LeanPool.Spawn(randomAnimal, spawnPosition, Quaternion.identity);
         AnimalController spawnedAnimal = spawnedGameObject.GetComponent<AnimalController>();
         _animals.Add(spawnedAnimal);
+        spawnedAnimal.Initialize(OnDespawn);
         
         // Calculate direction to the center
         Vector3 directionToCenter = new Vector3(0, 0, 0) - spawnPosition;
@@ -68,6 +70,11 @@ public class AnimalSpawner : MonoBehaviour
         spawnedAnimal.transform.rotation = Quaternion.LookRotation(directionToCenter);
     }
 
+    void OnDespawn(AnimalController animalController)
+    {
+        _animals.Remove(animalController);
+    }
+    
     Vector3 GetRandomBorderPosition()
     {
         Vector3 viewportPoint = Vector3.zero;

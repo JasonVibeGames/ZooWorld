@@ -538,6 +538,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2138703893854521778, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
+      propertyPath: _animalData
+      value: 
+      objectReference: {fileID: 11400000, guid: 71767a6c8613e4fc489224fd1ab2eba4, type: 2}
+    - target: {fileID: 2138703893854521778, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
       propertyPath: _animalMovementBehaviour
       value: 
       objectReference: {fileID: 5274330963822451033}

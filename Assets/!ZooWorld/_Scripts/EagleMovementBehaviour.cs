@@ -9,9 +9,18 @@ public class EagleMovement : AnimalMovementBehaviour
     [SerializeField] private float rotationSpeed = 5f; // Speed of rotation while turning
     [SerializeField] private bool adjustOnSpawn = true; // Force inward movement on spawn
     [SerializeField] private float flyHeight = 10f; // Default flying height
+    [SerializeField] private float swoopDuration;
+    [SerializeField] private float _swoopSpeed;
+    [SerializeField] private BoxDetector _swoopDetector;
+    private Coroutine swoopingCR;
+    private float swoopHeight = 0;
     private Camera mainCamera;
-    private bool isPaused;
+    private bool _isRotating;
+    private bool _isSwooping;
+    private bool _justRotated;
 
+    public bool IsMoving => !_isRotating;
+    
     void Start()
     {
         mainCamera = Camera.main;
@@ -20,19 +29,40 @@ public class EagleMovement : AnimalMovementBehaviour
         {
             EnsureInitialDirectionInward();
         }
+        
+        _swoopDetector.Initialize(OnDetectPrey);
+    }
+
+    private void OnDetectPrey(Collider other)
+    {
+        SwoopDown();
+    }
+
+    private void OnDisable()
+    {
+        _isSwooping = false;
+        _isRotating = false;
     }
 
     protected override void Move()
     {
-        if (isPaused) return;
+        if (_isRotating) return;
 
         // Move forward in the current direction
         Vector3 targetPos = transform.position + transform.forward * speed * Time.deltaTime;
-        targetPos.y = flyHeight;
+        float targetHeight = flyHeight;
+        
+        if (_isSwooping)
+        {
+            targetHeight = 0;
+        }
+
+        targetPos.y = Mathf.Lerp(transform.position.y, targetHeight, Time.deltaTime * _swoopSpeed);
+     
         transform.position = targetPos;
 
         // Check if near the edge of the screen
-        if (IsNearScreenEdge())
+        if (IsNearScreenEdge() && !_isRotating && !_justRotated)
         {
             StartCoroutine(PauseAndRotate());
         }
@@ -57,7 +87,13 @@ public class EagleMovement : AnimalMovementBehaviour
 
     private IEnumerator PauseAndRotate()
     {
-        isPaused = true;
+        if (swoopingCR != null)
+        {
+            StopCoroutine(swoopingCR);
+            _isSwooping = false;
+        }
+        
+        _isRotating = true;
 
         // Generate a random direction biased toward the center
         Vector3 randomDirection = GetRandomDirectionTowardsCenter();
@@ -70,7 +106,11 @@ public class EagleMovement : AnimalMovementBehaviour
             yield return null;
         }
 
-        isPaused = false;
+        _isRotating = false;
+        _justRotated = true;
+
+        yield return new WaitForSeconds(1);
+        _justRotated = false;
     }
 
     private Vector3 GetRandomDirectionTowardsCenter()
@@ -87,5 +127,23 @@ public class EagleMovement : AnimalMovementBehaviour
         Quaternion randomRotation = Quaternion.Euler(0, randomAngle, 0);
 
         return (randomRotation * directionToCenter).normalized;
+    }
+
+    public void SwoopDown()
+    {
+        if (_isSwooping || _isRotating)
+        {
+            return;
+        }
+        
+        swoopingCR = StartCoroutine(PerformSwoop());
+    }
+
+    IEnumerator PerformSwoop()
+    {
+        _isSwooping = true;
+        yield return new WaitForSeconds(swoopDuration);
+        _isSwooping = false;
+        swoopingCR = null;
     }
 }

@@ -27,15 +27,31 @@ public class FrogMovement : AnimalMovementBehaviour
         if (_timer >= _jumpIntervalTime)
         {
             ChangeDirectionIfNeeded();
-            Jump();
+            Jump(_jumpHeight);
             _timer = 0;
         }
     }
 
-    void Jump()
+    public override void BounceAway()
+    {
+        Debug.Log("Bounce");
+        transform.DOKill();
+        TurnAround();
+        Jump(0);
+    }
+
+    void Jump(float jumpHeight)
     {
         Vector3 jumpPos = transform.position + transform.forward * _jumpDistance;
-        transform.DOJump(jumpPos, _jumpHeight, 1, _jumpDuration);
+        jumpPos.y = 0;
+        transform.DOJump(jumpPos, jumpHeight, 1, _jumpDuration);
+    }
+
+    void TurnAround()
+    {
+        float currentYRotation = transform.eulerAngles.y;
+        float oppositeYRotation = (currentYRotation + 180f) % 360f;
+        transform.rotation = Quaternion.Euler(0, oppositeYRotation, 0);
     }
 
     void ChangeDirectionIfNeeded()
@@ -69,4 +85,5 @@ public class FrogMovement : AnimalMovementBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(directionToCenter);
         transform.rotation = targetRotation; // Instantly align towards the center
     }
+    
 }

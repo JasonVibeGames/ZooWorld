@@ -487,8 +487,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2138703893854521778, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
+      propertyPath: _animalData
+      value: 
+      objectReference: {fileID: 11400000, guid: 40bcbcbe2b4354639bdc8943d1c98843, type: 2}
+    - target: {fileID: 2138703893854521778, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
       propertyPath: _animalMovementBehaviour
       value: 
+      objectReference: {fileID: 6386578432579101059}
+    - target: {fileID: 4319091816376444886, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
+      propertyPath: m_Size.x
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4319091816376444886, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
+      propertyPath: m_Size.y
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4319091816376444886, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
+      propertyPath: m_Size.z
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 5050413090243701941, guid: 917f22310b4a4474bbadbd484c990864, type: 3}
       propertyPath: m_LocalPosition.x

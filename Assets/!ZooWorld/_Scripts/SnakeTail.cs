@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Lean.Pool;
 using UnityEngine;
 
 public class SnakeTail : MonoBehaviour
@@ -11,7 +13,7 @@ public class SnakeTail : MonoBehaviour
 
     private List<Transform> tailSegments = new List<Transform>();
 
-    void Start()
+    void OnEnable()
     {
         InitializeTail();
     }
@@ -21,17 +23,32 @@ public class SnakeTail : MonoBehaviour
         MoveTail();
     }
 
+    private void OnDisable()
+    {
+        DespawnTail();
+    }
+
     private void InitializeTail()
     {
         Vector3 previousPosition = snakeHead.position;
 
         for (int i = 0; i < initialTailLength; i++)
         {
-            GameObject tailSegment = Instantiate(tailPrefab, previousPosition, Quaternion.identity);
+            GameObject tailSegment = LeanPool.Spawn(tailPrefab, previousPosition, Quaternion.identity);
             tailSegments.Add(tailSegment.transform);
 
             previousPosition -= snakeHead.forward * distanceBetweenSegments;
         }
+    }
+
+    void DespawnTail()
+    {
+        foreach (var tailSegment in tailSegments)
+        {
+            LeanPool.Despawn(tailSegment);
+        }
+        
+        tailSegments.Clear();
     }
 
     private void MoveTail()
@@ -48,14 +65,5 @@ public class SnakeTail : MonoBehaviour
 
             previousPosition = currentSegment.position;
         }
-    }
-
-    public void AddTailSegment()
-    {
-        Transform lastSegment = tailSegments[tailSegments.Count - 1];
-        Vector3 newSegmentPosition = lastSegment.position - snakeHead.forward * distanceBetweenSegments;
-
-        GameObject newSegment = Instantiate(tailPrefab, newSegmentPosition, Quaternion.identity);
-        tailSegments.Add(newSegment.transform);
     }
 }
