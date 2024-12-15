@@ -7,6 +7,7 @@ using UnityEngine.Events;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    public UnityAction onKill;
     public UnityAction<int> onKillPredator;
     public UnityAction<int> onKillPrey;
     private int _predatorKillCount;
@@ -19,6 +20,8 @@ public class GameManager : MonoBehaviour
 
     public void OnKill(AnimalData.AnimalRole animalRole)
     {
+        onKill?.Invoke();
+        
         if (animalRole == AnimalData.AnimalRole.Predator)
         {
             _predatorKillCount += 1;

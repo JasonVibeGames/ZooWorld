@@ -33,11 +33,6 @@ public class EagleMovement : AnimalMovementBehaviour
         }
 
         _swoopDetector.Initialize(OnDetectPrey);
-
-        if (art == null)
-        {
-            Debug.LogError("Art transform is not assigned!");
-        }
     }
 
     private void OnDetectPrey(Collider other)
